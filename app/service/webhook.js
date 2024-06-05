@@ -47,6 +47,12 @@ class WebhookService extends Service {
     const content = [];
     switch (gitlabEvent) {
       case X_GITLAB_EVENT.push:
+      case X_GITLAB_EVENT.tag_push:
+      case X_GITLAB_EVENT.issue:
+      case X_GITLAB_EVENT.note:
+      case X_GITLAB_EVENT.merge_request:
+      case X_GITLAB_EVENT.wiki_page:
+      case X_GITLAB_EVENT.pipeline:
         this.pushHookHandler(content, data);
         break;
       case X_GITLAB_EVENT.system:

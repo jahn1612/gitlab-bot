@@ -34,7 +34,13 @@ const EVENT_TYPE = {
 };
 
 const X_GITLAB_EVENT = {
-  push: 'Push Hook',
+  push: 'Push Hook', 
+  tag_push: 'Tag Push Hook',
+  issue: 'Issue Hook',
+  note: 'Note Hook',
+  merge_request: 'Merge Request Hook',
+  wiki_page: 'Wiki Page Hook',
+  pipeline: 'Pipeline Hook',
   system: 'System Hook',
 };
 
