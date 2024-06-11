@@ -84,7 +84,7 @@ module.exports = appInfo => {
 {{#project}}项目信息： [[{{name}} / {{namespace}}]({{web_url}})]{{/project}}
 `,
 
-        merge_request: `{{#GB_stateAction}}{{GB_stateAction}} ：{{/GB_stateAction}}\`{{user.name}}\`**{{GB_stateString}}{{#object_attributes}}**[[#{{iid}}合并请求 {{title}}]({{iid}})]，从\`{{source_branch}}\`合并至\`{{target_branch}}\`{{/object_attributes}}
+        merge_request: `{{#GB_stateAction}}{{GB_stateAction}} ：{{/GB_stateAction}}\`{{user.name}}\`**{{GB_stateString}}{{#object_attributes}}**[[#{{iid}}合并请求 {{title}}]({{url}})]，从\`{{source_branch}}\`合并至\`{{target_branch}}\`{{/object_attributes}}
 > **MR详情：**
 > 提交时间： {{GB_updated_at}}
 > 提交详情： 
