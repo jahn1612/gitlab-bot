@@ -247,15 +247,29 @@ class WebhookService extends Service {
 
   async assembleMergeMsg(content, data) {
     const { object_attributes = {} } = data;
-    const { updated_at, state } = object_attributes;
+    const { updated_at, state, action } = object_attributes;
 
     let GB_stateString = '',
       GB_stateAction = '';
     // opened, closed, locked, or merged
     switch (state) {
       case 'opened':
-        GB_stateString = '开启了';
-        GB_stateAction = '**请项目管理员确认**';
+
+        switch (action) {
+          case 'update':
+            GB_stateString = '更新了';
+            GB_stateAction = '**请代码审核员确认**';
+            break;
+
+          case 'approved':
+            GB_stateString = '确认了';
+            GB_stateAction = '**请项目管理员合并**';
+            break;
+
+          default:
+            GB_stateString = '开启了';
+            GB_stateAction = '**请代码审核员确认**';
+        }
         break;
 
       case 'closed':
@@ -268,7 +282,7 @@ class WebhookService extends Service {
         break;
 
       case 'merged':
-        GB_stateString = '确认了';
+        GB_stateString = '合并了';
         break;
 
       default:
