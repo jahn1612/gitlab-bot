@@ -246,11 +246,27 @@ class WebhookService extends Service {
   }
 
   async assembleMergeMsg(content, data) {
-    const { object_attributes = {} } = data;
+    const { object_attributes = {} ,reviewers = [] } = data;
     const { updated_at, state, action } = object_attributes;
 
     let GB_stateString = '',
-      GB_stateAction = '';
+      GB_stateAction = '',
+      GB_ReviewerUsernames  = '';
+
+    // 2. 检查 reviewers 数组是否存在
+    if (reviewers.length > 0) {
+      // 3. 遍历 reviewers 数组并拼接 username,用、号隔开
+      reviewers.forEach((reviewer, index) => {
+        GB_ReviewerUsernames += reviewer.username;
+        if (index < reviewers.length - 1) {
+          GB_ReviewerUsernames += '、';
+        }
+      });
+      GB_ReviewerUsernames = '**请 ' + GB_ReviewerUsernames + ' 检视**';
+    } else {
+      GB_ReviewerUsernames = '**请代码审核员检视**';
+    }
+
     // opened, closed, locked, or merged
     switch (state) {
       case 'opened':
@@ -258,7 +274,7 @@ class WebhookService extends Service {
         switch (action) {
           case 'update':
             GB_stateString = '更新了';
-            GB_stateAction = '**请代码审核员确认**';
+            GB_stateAction = GB_ReviewerUsernames;
             break;
 
           case 'approved':
@@ -268,7 +284,7 @@ class WebhookService extends Service {
 
           default:
             GB_stateString = '开启了';
-            GB_stateAction = '**请代码审核员确认**';
+            GB_stateAction = GB_ReviewerUsernames;
         }
         break;
 
