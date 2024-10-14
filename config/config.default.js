@@ -91,6 +91,7 @@ module.exports = appInfo => {
 > {{#object_attributes.last_commit}}》 {{author.name}}： [{{title}}]({{url}}){{/object_attributes.last_commit}}
 
 {{#project}}项目信息： [[{{name}} / {{namespace}}]({{web_url}})]{{/project}}
+{{#GB_Participants}}关注人员： {{GB_Participants}}{{/GB_Participants}}
 `,
         tag_push: `\`{{user_name}}\`{{GB_op}}标签 [[{{project.name}} | {{GB_tag}}]({{web_url}}/-/tags/{{GB_tag}})]。
 > 包含\`{{total_commits_count}}\`个提交，\`{{GB_changes.added}}\`新增 | \`{{GB_changes.modified}}\`修改 | \`{{GB_changes.removed}}\`删除
@@ -127,6 +128,7 @@ module.exports = appInfo => {
 文件： {{file_name}}{{/snippet}}
 
 {{#project}}项目信息： [[{{name}} / {{namespace}}]({{web_url}})]{{/project}}
+{{#GB_Participants}}关注人员： {{GB_Participants}}{{/GB_Participants}}
 `,
         project_action: `{{owner_name}} 做了 \`{{event_name}}\` 操作
 > 项目路径：{{path_with_namespace}}`,

@@ -71,6 +71,11 @@ Gitlab pipeline 流水线
 
 如何添加群机器人可自行百度，[企业微信群机器人配置说明](https://work.weixin.qq.com/api/doc/90000/90136/91770)。
 
+如何在群里@对应的人员：
+	需要修改 config 目录下 user_mapping.js 文件中 GITUSER_QYWX_MAPPING 的内容，将git用户ID 和 企业微信唯一ID 一一对应即可。
+	提示@undefined 表示用户没有映射
+
+
 ### 与飞书对接
 
 飞书群里添加机器人。[飞书群机器人配置说明](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)

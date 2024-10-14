@@ -5,6 +5,7 @@ const moment = require('moment');
 const Mustache = require('mustache');
 
 const { OBJECT_KIND, X_GITLAB_EVENT, EVENT_TYPE } = require('../imports/const');
+const { GITUSER_QYWX_MAPPING } = require('../../config/user_mapping');
 
 // set default lang
 moment.locale('zh-cn');
@@ -19,6 +20,9 @@ class WebhookService extends Service {
     const { template, response, color, showOriginal } = this.config;
 
     const isShowOriginal = process.env['SHOW_ORIGINAL'] || showOriginal;
+
+    // set platform
+    this.platform = platform;
 
     // set templage, response, color code
     if (!template[platform]) {
@@ -246,8 +250,8 @@ class WebhookService extends Service {
   }
 
   async assembleMergeMsg(content, data) {
-    const { object_attributes = {} ,reviewers = [] } = data;
-    const { updated_at, state, action } = object_attributes;
+    const { object_attributes = {} , reviewers = [] } = data;
+    const { author_id, assignee_ids, reviewer_ids, updated_at, state, action } = object_attributes;
 
     let GB_stateString = '',
       GB_stateAction = '',
@@ -304,12 +308,20 @@ class WebhookService extends Service {
       default:
     }
 
+    // Merge participants and remove duplicates
+    const participants_ids = new Set([
+      author_id,
+      ...assignee_ids, // 空数组不会影响结果
+      ...reviewer_ids
+    ]);
+
     const template = this.template;
     const merge_request = Mustache.render(template.merge_request, {
       ...data,
       GB_stateAction,
       GB_stateString,
       GB_updated_at: moment(updated_at).format('MM-DD HH:mm'),
+      GB_Participants: this.formatParticipants([...participants_ids]),
     });
 
     return content.push(merge_request);
@@ -365,13 +377,23 @@ class WebhookService extends Service {
   }
 
   async assembleNoteMsq(content, data) {
-    const { object_attributes = {} } = data;
-    const { action } = object_attributes;
+    const { object_attributes = {}, merge_request ={} } = data;
+    const { author_id, action } = object_attributes;
+    const { author_id:merge_author_id, assignee_ids, reviewer_ids } = merge_request;
+
+    // Merge participants and remove duplicates
+    const participants_ids = new Set([
+      author_id,
+      merge_author_id,
+      ...assignee_ids, // 空数组不会影响结果
+      ...reviewer_ids
+    ]);
 
     const template = this.template;
     const note = Mustache.render(template.note, {
       ...data,
       GB_action: this.formatAction(action),
+      GB_Participants: this.formatParticipants([...participants_ids]),
     });
     return content.push(note);
   }
@@ -476,6 +498,27 @@ class WebhookService extends Service {
     }
 
     return { actionColor, actionString };
+  }
+
+  formatParticipants(participants_ids) {
+    let participants = '';
+
+    this.logger.info('====> this.platform: ', this.platform);
+    switch (this.platform) {
+      case 'qywx':
+        if (participants_ids.length > 0) {
+          participants_ids.forEach((participants_id) => {
+            participants += '<@' + GITUSER_QYWX_MAPPING[participants_id] + '>'
+          });
+        }
+        this.logger.debug('====> participants: ', participants);
+        break;
+
+      default:
+        this.logger.error('====> platform not support: ', this.platform);
+    }
+
+    return participants;
   }
 
   getChangesFromCommits(commits) {
