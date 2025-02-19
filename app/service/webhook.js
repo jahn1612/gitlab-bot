@@ -1,7 +1,7 @@
 'use strict';
 
 const Service = require('egg').Service;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const Mustache = require('mustache');
 
 const { OBJECT_KIND, X_GITLAB_EVENT, EVENT_TYPE } = require('../imports/const');
@@ -316,11 +316,12 @@ class WebhookService extends Service {
     ]);
 
     const template = this.template;
+    const timezone = 'Asia/Shanghai'; // 获取系统时区
     const merge_request = Mustache.render(template.merge_request, {
       ...data,
       GB_stateAction,
       GB_stateString,
-      GB_updated_at: moment(updated_at).format('MM-DD HH:mm'),
+      GB_updated_at: moment(updated_at).tz(timezone).format('MM-DD HH:mm'), // 格式化时间，增加时区处理
       GB_Participants: this.formatParticipants([...participants_ids]),
     });
 
